@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>ALGORICH MASTER KEY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { 
+            --primary: #00f2fe; 
+            --secondary: #7000ff; 
+            --neon-pink: #ff00ff; 
+            --bg-dark: #02040a; 
+        }
+
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg-dark); color: white; 
+            font-family: 'JetBrains Mono', monospace; 
+            display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; -webkit-tap-highlight-color: transparent; 
+        }
+
+        /* FONDO INTERACTIVO */
+        #interactive-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        /* TARJETA PRINCIPAL (TAMAÑO FIJO) */
+        .master-card { 
+            background: rgba(10, 20, 35, 0.95); 
+            backdrop-filter: blur(25px); 
+            border: 2px solid var(--primary); 
+            padding: 40px 30px; 
+            border-radius: 25px; 
+            width: 90%; 
+            max-width: 380px; 
+            min-height: 600px; /* Ajustado para incluir logo y textos */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.15); 
+            position: relative; 
+            z-index: 10; 
+            animation: emerge 0.6s ease-out; 
+            box-sizing: border-box;
+        }
+        @keyframes emerge { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* HEADER CON LOGO */
+        .header-section { margin-bottom: 20px; text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .logo-img { 
+            width: 100px; 
+            height: auto; 
+            margin-bottom: 15px; 
+            filter: drop-shadow(0 0 15px var(--primary)); 
+        }
+
+        .title-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
+        .lock-icon { width: 24px; height: 24px; fill: var(--primary); filter: drop-shadow(0 0 8px var(--primary)); }
+        
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 22px; letter-spacing: 3px; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+        .system-label { font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; display: block; font-weight: bold; opacity: 0.8; }
+
+        /* CONTENEDORES DE PASOS */
+        .step-container { width: 100%; display: flex; flex-direction: column; align-items: center; flex-grow: 1; justify-content: center; }
+
+        /* BOTONES DE SELECCIÓN */
+        .bot-label { font-size: 11px; color: #fff; margin-bottom: 10px; font-family: 'Orbitron'; letter-spacing: 1px; text-align: left; width: 100%; }
+        .selector-grid { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; }
+        
+        button.bot-btn { 
+            flex: 1; padding: 14px 5px; border: 1px solid #444; border-radius: 12px; 
+            background: rgba(0,0,0,0.6); color: #888; font-size: 9px; font-weight: bold; 
+            font-family: 'Orbitron'; cursor: pointer; -webkit-appearance: none; transition: 0.3s;
+        }
+        button.bot-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0, 242, 254, 0.15); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
+        button.bot-btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 20px var(--primary); }
+
+        /* INPUTS */
+        input { 
+            width: 100%; padding: 16px; margin-bottom: 20px; background: rgba(0,0,0,0.8); 
+            border: 1px solid #333; border-radius: 12px; color: var(--primary); 
+            font-size: 16px; box-sizing: border-box; outline: none; text-align: center; -webkit-appearance: none; 
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+
+        /* BOTÓN DE ACCIÓN */
+        button.launch-btn { 
+            width: 100%; padding: 18px; border: none; border-radius: 12px; 
+            background: linear-gradient(45deg, var(--secondary), var(--primary)); 
+            color: white; font-family: 'Orbitron'; font-weight: bold; 
+            font-size: 13px; cursor: pointer; text-transform: uppercase; -webkit-appearance: none; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        button.launch-btn:hover { box-shadow: 0 0 25px var(--secondary); transform: scale(1.02); }
+        button.launch-btn:active { transform: scale(0.98); }
+
+        .hidden { display: none !important; }
+        
+        /* KEY DISPLAY */
+        #final-key { 
+            display: block; font-size: 38px; 
+            color: var(--neon-pink); 
+            text-shadow: 0 0 25px var(--neon-pink); 
+            margin: 20px 0; font-family: 'Orbitron'; font-weight: 700; 
+        }
+
+        /* ADVERTENCIA FINAL */
+        .instruction-msg {
+            font-size: 9px; color: var(--neon-pink); margin-top: 20px; 
+            font-weight: bold; letter-spacing: 1px; animation: fadeIn 0.5s;
+            text-align: center; line-height: 1.5; border-top: 1px solid rgba(255, 0, 255, 0.3);
+            padding-top: 15px; width: 100%;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .footer { 
+            margin-top: auto; padding-top: 20px;
+            font-size: 8px; color: #666; letter-spacing: 1.5px; 
+            line-height: 1.8; text-transform: uppercase; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="interactive-bg"></canvas>
+
+    <div class="master-card">
+        <div class="header-section">
+            <img src="https://i.postimg.cc/44GvdSjr/LOGO-TRANSPARENTE.png" alt="Algorich Logo" class="logo-img">
+            
+            <div class="title-container">
+                <svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7zm3 10a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                <h1>MASTER KEY</h1>
+            </div>
+            <span class="system-label">PROTOCOLO DE ACCESO ALGORICH</span>
+        </div>
+
+        <div id="step-1" class="step-container">
+            <span class="bot-label">ELIGE EL BOT:</span>
+            <div class="selector-grid">
+                <button id="o1" class="bot-btn active" type="button" onclick="setBot('BURGUER SCALP', 'o1')">BURGUER SCALP</button>
+                <button id="o2" class="bot-btn" type="button" onclick="setBot('TASTY BACON', 'o2')">TASTY BACON</button>
+            </div>
+            <input type="email" id="email-in" placeholder="USER EMAIL" spellcheck="false">
+            <button class="launch-btn" type="button" onclick="processStep1()">SOLICITAR ACCESO</button>
+        </div>
+
+        <div id="step-2" class="step-container hidden">
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 20px; line-height: 1.6; text-align: center;">
+                Hemos enviado el código a tu mail,<br>revisa tu bandeja de entrada y spam.
+            </p>
+            <input type="number" id="code-in" placeholder="0000" pattern="\d*">
+            <button class="launch-btn" type="button" onclick="processStep2()">VALIDAR ACCESO</button>
+        </div>
+
+        <div id="step-3" class="step-container hidden">
+            <p style="font-size: 11px; color: #888; margin-bottom: 20px;">Vincula tu ID de MetaTrader 5:</p>
+            <input type="number" id="acc-in" placeholder="MT5 ACCOUNT ID" pattern="\d*">
+            <button class="launch-btn" type="button" onclick="processStep3()">GENERAR CLAVE</button>
+        </div>
+
+        <div id="result-ui" class="step-container hidden">
+            <span class="system-label">ACCESO AUTORIZADO</span>
+            <span id="final-key">---</span>
+            <button id="copy-btn" class="launch-btn" style="background:transparent; border:1px solid var(--neon-pink); color: var(--neon-pink); font-size:10px;" type="button" onclick="copyFinal()">COPIAR KEY</button>
+            <div id="final-instruction" class="instruction-msg hidden">
+                INGRESA LA LICENCIA EN LOS PARÁMETROS DEL BOT Y PROCURA NO COMPARTIR EL EJECUTABLE, NOS DARÁ AVISO Y BLOQUEAREMOS TU ACCESO DE POR VIDA!
+            </div>
+        </div>
+
+        <div class="footer">
+            POWERED BY ALGORICH TRADE @2026<br>
+            DESIGNED BY @KITOTRADING
+        </div>
+    </div>
+
+    <script>
+        // EMAILJS INIT
+        (function(){ emailjs.init("xnpkYbBmPuJmtYJf7"); })();
+
+        let selectedSystem = 'BURGUER SCALP';
+        let secureCode = "";
+
+        // FONDO DE PARTÍCULAS
+        const canvas = document.getElementById('interactive-bg');
+        const ctx = canvas.getContext('2d');
+        let dots = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            dots = [];
+            for(let i=0; i<45; i++) {
+                dots.push({
+                    x: Math.random()*canvas.width, 
+                    y: Math.random()*canvas.height, 
+                    vx: (Math.random()-0.5)*0.4, 
+                    vy: (Math.random()-0.5)*0.4 
+                });
+            }
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "rgba(0, 242, 254, 0.4)";
+            
+            dots.forEach(d => {
+                d.x += d.vx; d.y += d.vy;
+                if(d.x<0 || d.x>canvas.width) d.vx*=-1;
+                if(d.y<0 || d.y>canvas.height) d.vy*=-1;
+                ctx.beginPath(); ctx.arc(d.x, d.y, 1.5, 0, Math.PI*2); ctx.fill();
+            });
+
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.15)";
+            ctx.lineWidth = 0.5;
+            for(let i=0; i<dots.length; i++) {
+                for(let j=i+1; j<dots.length; j++) {
+                    let dist = Math.hypot(dots[i].x - dots[j].x, dots[i].y - dots[j].y);
+                    if(dist < 110) {
+                        ctx.beginPath(); ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(dots[j].x, dots[j].y); ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        initCanvas(); animate();
+
+        // LÓGICA APP
+        function setBot(name, elementId) {
+            document.getElementById('o1').className = 'bot-btn';
+            document.getElementById('o2').className = 'bot-btn';
+            document.getElementById(elementId).className = 'bot-btn active';
+            selectedSystem = name;
+        }
+
+        function processStep1() {
+            const email = document.getElementById('email-in').value;
+            if(!email.includes('@')) { alert("Introduce un email válido"); return; }
+            
+            const btn = document.querySelector('#step-1 .launch-btn');
+            btn.innerText = "CONECTANDO...";
+            
+            secureCode = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            emailjs.send('service_76jy95j', 'template_prywbr8', { 
+                user_email: email, 
+                v_code: secureCode, 
+                bot_name: selectedSystem 
+            }).then(() => { 
+                document.getElementById('step-1').className='hidden'; 
+                document.getElementById('step-2').className='step-container'; 
+            }).catch((err) => {
+                alert("Error de conexión. Intenta de nuevo.");
+                btn.innerText = "SOLICITAR ACCESO";
+            });
+        }
+
+        function processStep2() {
+            if(document.getElementById('code-in').value === secureCode) {
+                document.getElementById('step-2').className='hidden'; 
+                document.getElementById('step-3').className='step-container';
+            } else {
+                alert("Código incorrecto");
+            }
+        }
+
+        function processStep3() {
+            const acc = document.getElementById('acc-in').value;
+            if(!acc) return;
+            
+            let finalValue = 0;
+
+            // LÓGICA MATEMÁTICA ACTUALIZADA
+            if (selectedSystem === 'BURGUER SCALP') {
+                finalValue = (parseInt(acc) + 111111) * 3;
+            } else {
+                // TASTY BACON
+                finalValue = (parseInt(acc) + 123456) * 3;
+            }
+
+            document.getElementById('final-key').innerText = finalValue;
+            document.getElementById('step-3').className='hidden'; 
+            document.getElementById('result-ui').className='step-container';
+        }
+
+        function copyFinal() {
+            const k = document.getElementById('final-key').innerText;
+            const el = document.createElement('textarea');
+            el.value = k;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const btn = document.getElementById('copy-btn');
+            btn.innerText = "¡COPIADO!";
+            
+            document.getElementById('final-instruction').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
